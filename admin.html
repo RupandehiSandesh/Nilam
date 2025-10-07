@@ -129,32 +129,34 @@
             const submitButton = document.getElementById('submit-button');
             const loadingArticles = document.getElementById('loading-articles');
             let attempts = 0;
-            const maxAttempts = 50; // Try for 5 seconds (50 * 100ms)
+            const maxAttempts = 100; // Try for 10 seconds
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Waiting for Server...';
+            loadingArticles.textContent = 'Waiting for server configuration...';
+            console.log('Starting to wait for Firebase config...');
 
             const checkInterval = setInterval(() => {
-                if (typeof __firebase_config !== 'undefined' && typeof __app_id !== 'undefined') {
+                attempts++;
+                console.log(`Attempt ${attempts} to find config...`);
+                
+                if (typeof __firebase_config !== 'undefined' && __firebase_config && typeof __app_id !== 'undefined' && __app_id) {
+                    console.log('Config found! Initializing Firebase.');
                     clearInterval(checkInterval);
-                    initializeFirebase();
-                } else {
-                    attempts++;
-                    if (attempts > maxAttempts) {
-                        clearInterval(checkInterval);
-                        console.error("Firebase configuration is missing from the environment after multiple attempts.");
-                        messageDiv.textContent = 'Error: Server configuration is missing. Cannot connect.';
-                        messageDiv.className = 'text-red-600';
-                        submitButton.textContent = 'Connection Failed';
-                        submitButton.disabled = true;
-                        loadingArticles.textContent = 'Could not connect to the database.';
-                        loadingArticles.className = 'text-red-600';
-                    }
+                    initializeFirebase(JSON.parse(__firebase_config), __app_id);
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    console.error("Firebase configuration failed to load after 10 seconds.");
+                    messageDiv.textContent = 'Error: Server configuration is missing. Cannot connect. Please try refreshing the page.';
+                    messageDiv.className = 'text-red-600';
+                    submitButton.textContent = 'Connection Failed';
+                    loadingArticles.textContent = 'Could not connect to the database.';
+                    loadingArticles.className = 'text-red-600';
                 }
             }, 100);
         }
 
-        function initializeFirebase() {
-            const firebaseConfig = JSON.parse(__firebase_config);
-            const appId = __app_id;
-
+        function initializeFirebase(firebaseConfig, appId) {
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
             const auth = getAuth(app);
@@ -164,7 +166,6 @@
             const messageDiv = document.getElementById('form-message');
             const submitButton = document.getElementById('submit-button');
 
-            submitButton.disabled = true;
             submitButton.textContent = 'Connecting...';
 
             onAuthStateChanged(auth, user => {
@@ -242,49 +243,50 @@
             onSnapshot(articlesCollection, (snapshot) => {
                 if (snapshot.empty) {
                     loadingP.textContent = 'No articles have been published yet.';
-                    return;
-                }
-                
-                loadingP.style.display = 'none';
-                container.innerHTML = '';
-                const articles = [];
-                snapshot.forEach(doc => articles.push({ id: doc.id, ...doc.data() }));
-                
-                articles.sort((a, b) => {
-                    if (!b.createdAt) return -1;
-                    if (!a.createdAt) return 1;
-                    return b.createdAt.toMillis() - a.createdAt.toMillis()
-                });
-
-                articles.forEach(article => {
-                    const articleEl = document.createElement('div');
-                    articleEl.className = 'p-4 border rounded-md flex items-center justify-between';
+                    loadingP.style.display = 'block';
+                    container.innerHTML = ''; // Ensure container is empty except for the message
+                } else {
+                    loadingP.style.display = 'none';
+                    container.innerHTML = '';
+                    const articles = [];
+                    snapshot.forEach(doc => articles.push({ id: doc.id, ...doc.data() }));
                     
-                    const pubDate = article.createdAt ? article.createdAt.toDate().toLocaleDateString('en-US') : 'N/A';
-                    
-                    articleEl.innerHTML = `
-                        <div>
-                            <h3 class="font-bold text-gray-900">${article.title}</h3>
-                            <p class="text-sm text-gray-500">${article.category} - ${pubDate}</p>
-                        </div>
-                        <button data-id="${article.id}" class="delete-btn text-red-500 hover:text-red-700 font-semibold">Delete</button>
-                    `;
-                    container.appendChild(articleEl);
-                });
-
-                document.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', async (e) => {
-                        const id = e.target.dataset.id;
-                        if (confirm('Are you sure you want to delete this article?')) {
-                            try {
-                                await deleteDoc(doc(db, `/artifacts/${appId}/public/data/articles`, id));
-                            } catch (error) {
-                                console.error("Error deleting document: ", error);
-                                alert("Could not delete article.");
-                            }
-                        }
+                    articles.sort((a, b) => {
+                        if (!b.createdAt) return -1;
+                        if (!a.createdAt) return 1;
+                        return b.createdAt.toMillis() - a.createdAt.toMillis()
                     });
-                });
+
+                    articles.forEach(article => {
+                        const articleEl = document.createElement('div');
+                        articleEl.className = 'p-4 border rounded-md flex items-center justify-between';
+                        
+                        const pubDate = article.createdAt ? article.createdAt.toDate().toLocaleDateString('en-US') : 'N/A';
+                        
+                        articleEl.innerHTML = `
+                            <div>
+                                <h3 class="font-bold text-gray-900">${article.title}</h3>
+                                <p class="text-sm text-gray-500">${article.category} - ${pubDate}</p>
+                            </div>
+                            <button data-id="${article.id}" class="delete-btn text-red-500 hover:text-red-700 font-semibold">Delete</button>
+                        `;
+                        container.appendChild(articleEl);
+                    });
+
+                    document.querySelectorAll('.delete-btn').forEach(button => {
+                        button.addEventListener('click', async (e) => {
+                            const id = e.target.dataset.id;
+                            if (confirm('Are you sure you want to delete this article?')) {
+                                try {
+                                    await deleteDoc(doc(db, `/artifacts/${appId}/public/data/articles`, id));
+                                } catch (error) {
+                                    console.error("Error deleting document: ", error);
+                                    alert("Could not delete article.");
+                                }
+                            }
+                        });
+                    });
+                }
 
             }, (error) => {
                  console.error("Error fetching articles for admin:", error);
