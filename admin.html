@@ -6,10 +6,10 @@
     <title>Admin Panel - Rupandehi Sandesh</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
         .form-input { transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
-        #submit-button:disabled { cursor: not-allowed; background-color: #9ca3af; }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -87,8 +87,13 @@
         const publishedNewsContainer = document.getElementById('published-news');
 
         function getArticles() {
-            const articles = localStorage.getItem('rupandehi-sandesh-articles');
-            return articles ? JSON.parse(articles) : [];
+            try {
+                const articles = localStorage.getItem('rupandehi-sandesh-articles');
+                return articles ? JSON.parse(articles) : [];
+            } catch (e) {
+                console.error("Could not parse articles from localStorage", e);
+                return [];
+            }
         }
 
         function saveArticles(articles) {
@@ -132,7 +137,7 @@
             let articles = getArticles();
             const id = articleIdInput.value;
 
-            if (id) { // Editing existing article
+            if (id) {
                 const articleIndex = articles.findIndex(a => a.id === id);
                 if (articleIndex > -1) {
                     articles[articleIndex].title = titleInput.value;
@@ -140,7 +145,7 @@
                     articles[articleIndex].category = categoryInput.value;
                     articles[articleIndex].content = contentInput.value;
                 }
-            } else { // Adding new article
+            } else {
                 const newArticle = {
                     id: `article-${Date.now()}`,
                     title: titleInput.value,
@@ -168,6 +173,7 @@
                     articles = articles.filter(a => a.id !== id);
                     saveArticles(articles);
                     displayArticles();
+                    clearForm(); 
                 }
             }
 
@@ -180,6 +186,7 @@
                     imageUrlInput.value = article.imageUrl;
                     categoryInput.value = article.category;
                     contentInput.value = article.content;
+                    titleInput.focus();
                 }
             }
         });
@@ -205,14 +212,14 @@
         });
 
         function generateIndexHTML(articles) {
-            const articlesJSON = JSON.stringify(articles).replace(/'/g, "\\'");
+            const articlesJSON = JSON.stringify(articles);
             return `<!DOCTYPE html>
 <html lang="ne">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>रुपन्देही सन्देश - समाचार</title>
-    <script src="https://cdn.tailwindcss.com/"></script>
+    <script src="https://cdn.tailwindcss.com/"></` + `script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -324,7 +331,7 @@
         try { const mockData = { current: { temp_c: 28, condition: { text: "आंशिक बादल लागेको", icon: "//cdn.weatherapi.com/weather/64x64/day/116.png" }}}; const { current } = mockData; weatherWidget.innerHTML = \`<img src="https:\${current.condition.icon}" alt="\${current.condition.text}" class="w-6 h-6 mr-1"><span class="font-semibold">\${current.temp_c}°C,</span><span class="ml-1">\${current.condition.text}</span>\`;
         } catch (error) { console.error("Weather fetch error:", error); weatherWidget.innerHTML = 'मौसम डाटा अनुपलब्ध छ'; }
     }
-<\/script>
+</` + `script>
 </body>
 </html>`;
         }
