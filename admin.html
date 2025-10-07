@@ -146,24 +146,29 @@
                     submitButton.textContent = 'Publish Article';
                     displayPublishedNews(articlesCollection, db, appId);
                 } else {
+                    submitButton.disabled = true;
                     submitButton.textContent = 'Authenticating...';
-                    const authenticate = async () => {
-                        try {
-                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                                await signInWithCustomToken(auth, __initial_auth_token);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
-                        } catch (error) {
-                            console.error("Authentication failed:", error);
-                            submitButton.textContent = 'Authentication Failed';
-                            messageDiv.textContent = 'Error: Could not connect to the server.';
-                            messageDiv.className = 'text-red-600';
-                        }
-                    };
-                    authenticate();
                 }
             });
+            
+            const authenticate = async () => {
+                try {
+                    if (!auth.currentUser) {
+                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Authentication failed:", error);
+                    submitButton.textContent = 'Authentication Failed';
+                    messageDiv.textContent = `Error: Connection failed. (${error.code || error.message})`;
+                    messageDiv.className = 'text-red-600';
+                }
+            };
+            authenticate();
+
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
