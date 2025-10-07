@@ -48,7 +48,6 @@
         .section-border { border-color: var(--border-color); }
         .card-shadow { box-shadow: var(--card-shadow); }
         
-        /* Dynamic Gradient for Logo */
         .logo-text-color { 
             background: linear-gradient(to bottom, #ffffff 60%, #e0e0e0 100%);
             -webkit-background-clip: text;
@@ -56,7 +55,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Primary Accent Color for Borders and Ticker */
         .border-primary-accent { border-color: var(--primary-accent-color); }
         .bg-primary-accent { background-color: var(--primary-accent-color); }
         .text-hover-primary-accent:hover { color: var(--primary-accent-color); }
@@ -83,7 +81,6 @@
         }
         @keyframes pulse { 50% { opacity: .5; } }
 
-        /* Modal Styles */
         #modal-content img {
             max-width: 100%;
             height: auto;
@@ -185,37 +182,25 @@
 
             <section class="mb-8 pb-8 section-border">
                 <h2 class="text-2xl font-bold pb-2 mb-4 border-b-4 border-cyan-500 text-primary">खेलकुद</h2>
-                <div id="sports-section-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="space-y-3"><div class="skeleton h-32"></div><div class="skeleton h-5"></div></div>
-                    <div class="space-y-3"><div class="skeleton h-32"></div><div class="skeleton h-5"></div></div>
-                    <div class="space-y-3"><div class="skeleton h-32"></div><div class="skeleton h-5"></div></div>
-                    <div class="space-y-3"><div class="skeleton h-32"></div><div class="skeleton h-5"></div></div>
-                </div>
+                <div id="sports-section-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6"></div>
             </section>
 
             <section class="mb-8">
                 <h2 class="text-2xl font-bold pb-2 mb-4 border-b-4 border-green-500 text-primary">व्यापार</h2>
-                <div id="business-section-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="space-y-3"><div class="skeleton h-32"></div><div class="skeleton h-5"></div></div>
-                    <div class="space-y-3"><div class="skeleton h-32"></div><div class="skeleton h-5"></div></div>
-                    <div class="space-y-3"><div class="skeleton h-32"></div><div class="skeleton h-5"></div></div>
-                    <div class="space-y-3"><div class="skeleton h-32"></div><div class="skeleton h-5"></div></div>
-                </div>
+                <div id="business-section-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6"></div>
             </section>
         </div>
     </main>
 
-    <!-- Article Modal --><div id="article-modal" class="hidden fixed inset-0 z-[60] overflow-y-auto">
+    <div id="article-modal" class="hidden fixed inset-0 z-[60] overflow-y-auto">
         <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-75"></div>
         <div class="relative main-content-bg w-full max-w-4xl mx-auto my-8 p-6 md:p-8 rounded-lg shadow-xl">
             <button id="close-modal-button" class="absolute top-4 right-4 text-secondary hover:text-primary text-4xl font-light z-10">&times;</button>
             <div id="modal-content-container" class="max-h-[80vh] overflow-y-auto pr-4">
-                 <div id="modal-content" class="text-primary">
-                    <!-- Article content will be injected here --></div>
+                 <div id="modal-content" class="text-primary"></div>
             </div>
         </div>
     </div>
-
 
     <footer class="bg-gray-800 text-gray-300">
         <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
@@ -236,21 +221,188 @@
         </div>
     </footer>
 
-    <script>
-        let articlesByGuid = {};
-        const placeholderImgBaseColor = '1d4ed8'; // Blue for placeholder background
-        const placeholderImgTextColor = 'ffffff'; // White for placeholder text
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID" };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        let articlesById = {};
+        const placeholderImgBaseColor = '1d4ed8';
+        const placeholderImgTextColor = 'ffffff'; 
 
         const placeholderImg800x450 = `https://placehold.co/800x450/${placeholderImgBaseColor}/${placeholderImgTextColor}?text=रुपन्देही+सन्देश`;
         const placeholderImg400x225 = `https://placehold.co/400x225/${placeholderImgBaseColor}/${placeholderImgTextColor}?text=रुपन्देही+सन्देश`;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Mobile Menu
-            document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    // User is signed in, fetch the news.
+                    listenForNews();
+                } else {
+                    // No user, attempt to sign in.
+                    const authenticate = async () => {
+                        try {
+                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                                await signInWithCustomToken(auth, __initial_auth_token);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } catch (error) {
+                            console.error("Authentication failed:", error);
+                        }
+                    };
+                    authenticate();
+                }
+            });
+
+            // --- Standard UI setup ---
+            setupUI();
+        });
+        
+        function listenForNews() {
+            const articlesCollection = collection(db, `/artifacts/${appId}/public/data/articles`);
+            onSnapshot(articlesCollection, (snapshot) => {
+                const articles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                articles.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis()); // Sort by newest first
+                
+                articlesById = {};
+                articles.forEach(article => { articlesById[article.id] = article; });
+                
+                populateContent(articles);
+            }, (error) => {
+                console.error("Error fetching articles:", error);
+                 const errorMsg = '<p class="text-red-600 font-semibold col-span-full text-center">समाचार लोड गर्न असफल भयो।</p>';
+                document.getElementById('main-feature-container').innerHTML = errorMsg;
+            });
+        }
+        
+        function populateContent(articles) {
+            if (articles.length === 0) {
+                 const noNewsMsg = '<p class="text-secondary col-span-full text-center py-10">अहिले कुनै समाचार उपलब्ध छैन।</p>';
+                document.getElementById('main-feature-container').innerHTML = noNewsMsg;
+                 document.getElementById('side-stories-container').innerHTML = '';
+                 document.getElementById('news-section-grid').innerHTML = '';
+                 document.getElementById('sports-section-grid').innerHTML = '';
+                 document.getElementById('business-section-grid').innerHTML = '';
+                 document.getElementById('news-ticker').innerHTML = '';
+                return;
+            }
+
+            populateTicker(articles.slice(0, 10));
+            populateTopStories(articles.slice(0, 5));
+            populateNewsSection(articles.filter(a => a.category === 'News').slice(0, 3));
+            populateSportsSection(articles.filter(a => a.category === 'Sports').slice(0, 4));
+            populateBusinessSection(articles.filter(a => a.category === 'Business').slice(0, 4));
+            addClickListenersToCards();
+        }
+
+        function addClickListenersToCards() {
+            document.querySelectorAll('[data-id]').forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = card.dataset.id;
+                    if(id && articlesById[id]) {
+                        openArticleModal(articlesById[id]);
+                    }
+                });
+            });
+        }
+
+        function populateTicker(articles){
+            const ticker = document.getElementById('news-ticker');
+            if(ticker) ticker.innerHTML = articles.map(article => `<span class="ticker-item">${article.title} <i class="fas fa-circle text-white text-xs mx-2"></i></span>`).join('');
+        }
+        
+        function openArticleModal(article) {
+            const modal = document.getElementById('article-modal');
+            const modalContent = document.getElementById('modal-content');
+            
+            const pubDate = article.createdAt.toDate().toLocaleDateString('ne-NP', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            modalContent.innerHTML = `
+                <h1 class="text-3xl lg:text-4xl font-extrabold mb-2">${article.title}</h1>
+                <div class="flex items-center text-secondary text-sm mb-4">
+                    <span class="font-bold mr-2">रुपन्देही सन्देश संवाददाता</span> | 
+                    <span class="ml-2">प्रकाशित: ${pubDate}</span>
+                </div>
+                <img src="${article.imageUrl || placeholderImg800x450}" alt="${article.title}" class="w-full h-auto object-cover rounded-lg mb-6" onerror="this.src='${placeholderImg800x450}';">
+                <div class="text-lg">${article.content.replace(/\n/g, '<br>')}</div>
+            `;
+            
+            document.getElementById('modal-content-container').scrollTop = 0;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function populateTopStories(articles) {
+            const mainFeature = document.getElementById('main-feature-container');
+            const sideStories = document.getElementById('side-stories-container');
+            mainFeature.innerHTML = '';
+            sideStories.innerHTML = '';
+
+            const [topStory, ...otherStories] = articles;
+            if (topStory) {
+                mainFeature.innerHTML = `
+                    <div data-id="${topStory.id}" class="relative group cursor-pointer block overflow-hidden rounded-lg card-shadow">
+                        <img src="${topStory.imageUrl || placeholderImg800x450}" alt="${topStory.title}" class="w-full h-auto object-cover aspect-video transform group-hover:scale-110 transition-transform duration-500 ease-in-out" onerror="this.src='${placeholderImg800x450}';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-4 md:p-6 text-white">
+                            <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">${topStory.category}</span>
+                            <h1 class="text-3xl lg:text-4xl font-extrabold mt-2 group-hover:underline text-hover-primary-accent">${topStory.title}</h1>
+                        </div>
+                    </div>`;
+            }
+            otherStories.forEach(article => {
+                sideStories.innerHTML += `
+                    <div data-id="${article.id}" class="group cursor-pointer block transform hover:-translate-y-1 transition-transform duration-300">
+                        <div class="overflow-hidden rounded-lg">
+                            <img src="${article.imageUrl || placeholderImg400x225}" alt="${article.title}" class="w-full h-auto object-cover aspect-video transform group-hover:scale-110 transition-transform duration-500 ease-in-out" onerror="this.src='${placeholderImg400x225}';">
+                        </div>
+                        <h2 class="mt-2 text-xl font-bold group-hover:text-primary-accent text-primary">${article.title}</h2>
+                    </div>`;
+            });
+        }
+        
+        function populateNewsSection(articles){
+             populateGenericSection('news-section-grid', articles, 'blue', 3);
+        }
+
+        function populateGenericSection(containerId, articles, color, gridCols) {
+            const container = document.getElementById(containerId);
+            if(!articles || articles.length === 0) {
+                container.innerHTML = `<p class="text-secondary col-span-full">यस श्रेणीमा कुनै समाचार उपलब्ध छैन।</p>`;
+                return;
+            }
+            container.innerHTML = articles.map(article => `
+                <div data-id="${article.id}" class="group cursor-pointer block transform hover:-translate-y-1 transition-transform duration-300">
+                    <div class="relative overflow-hidden rounded-lg">
+                        <img src="${article.imageUrl || placeholderImg400x225}" alt="${article.title}" class="w-full h-auto object-cover aspect-video transform group-hover:scale-110 transition-transform duration-500 ease-in-out" onerror="this.src='${placeholderImg400x225}';">
+                        <span class="absolute top-2 left-2 bg-${color}-600 text-white text-xs font-bold px-2 py-1 rounded-full">${article.category}</span>
+                    </div>
+                    <h3 class="mt-2 text-lg font-bold group-hover:text-primary-accent text-primary">${article.title}</h3>
+                </div>`).join('');
+        }
+        
+        function populateSportsSection(articles) {
+            populateGenericSection('sports-section-grid', articles, 'cyan', 4);
+        }
+        function populateBusinessSection(articles) {
+            populateGenericSection('business-section-grid', articles, 'green', 4);
+        }
+        
+        function setupUI() {
+             document.getElementById('mobile-menu-button').addEventListener('click', () => {
                 document.getElementById('mobile-menu').classList.toggle('hidden');
             });
 
-            // Theme Toggle
             const themeToggle = document.getElementById('theme-toggle');
             const body = document.body;
             const themeIcon = themeToggle.querySelector('i');
@@ -267,7 +419,6 @@
                 themeIcon.classList.toggle('fa-moon', isDarkMode);
             });
             
-            // Modal Controls
             const modal = document.getElementById('article-modal');
             const closeModalButton = document.getElementById('close-modal-button');
             const modalOverlay = document.getElementById('modal-overlay');
@@ -280,19 +431,15 @@
             closeModalButton.addEventListener('click', closeModal);
             modalOverlay.addEventListener('click', closeModal);
 
-            // Initialize dynamic content
             updateDate();
             updateClock();
             setInterval(updateClock, 1000);
             fetchWeather();
-            fetchNews();
-        });
+        }
 
         function updateDate() {
             const dateElement = document.getElementById('current-date');
-            if(dateElement) {
-                dateElement.textContent = new Date().toLocaleDateString('ne-NP', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            }
+            if(dateElement) dateElement.textContent = new Date().toLocaleDateString('ne-NP', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         }
         
         function updateClock() {
@@ -314,174 +461,6 @@
                 console.error("Weather fetch error:", error);
                 weatherWidget.innerHTML = 'मौसम डाटा अनुपलब्ध छ';
             }
-        }
-
-        async function fetchNews() {
-            const rssUrl = 'https://ratopati.com/feed/';
-            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-
-                if (data.status === 'ok' && data.items.length > 0) {
-                    data.items.forEach(item => { articlesByGuid[item.guid] = item; });
-                    populateContent(data.items);
-                } else { throw new Error('No articles found'); }
-            } catch (error) {
-                console.error('Error fetching news:', error);
-                const errorMsg = '<p class="text-red-600 font-semibold col-span-full text-center">समाचार लोड गर्न असफल भयो। कृपया पछि प्रयास गर्नुहोस्।</p>';
-                document.getElementById('main-feature-container').innerHTML = errorMsg;
-                ['side-stories-container', 'news-section-grid', 'sports-section-grid', 'business-section-grid'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.innerHTML = '';
-                });
-            }
-        }
-
-        function addClickListenersToCards() {
-            document.querySelectorAll('[data-guid]').forEach(card => {
-                card.addEventListener('click', () => {
-                    const guid = card.dataset.guid;
-                    if(guid && articlesByGuid[guid]) {
-                        openArticleModal(articlesByGuid[guid]);
-                    }
-                });
-            });
-        }
-
-        function populateContent(articles) {
-            populateTicker(articles.slice(0, 10));
-            populateTopStories(articles.slice(0, 5));
-            populateNewsSection(articles.slice(5, 11)); // More news articles
-            const sports = articles.filter(a => a.categories.some(cat => ['खेलकुद', 'sports'].includes(cat.toLowerCase()))).slice(0, 4);
-            populateSportsSection(sports);
-            const business = articles.filter(a => a.categories.some(cat => ['अर्थ', 'business', 'व्यापार', 'अर्थ / वाणिज्य'].includes(cat.toLowerCase()))).slice(0, 4);
-            populateBusinessSection(business);
-            addClickListenersToCards();
-        }
-        
-        function populateTicker(articles){
-            const ticker = document.getElementById('news-ticker');
-            if(ticker) ticker.innerHTML = articles.map(article => `<span class="ticker-item">${article.title} <i class="fas fa-circle text-white text-xs mx-2"></i></span>`).join('');
-        }
-        
-        function getCategory(article) {
-             const cats = article.categories;
-             if(!cats || cats.length === 0) return null;
-             if (cats.some(cat => ['खेलकुद', 'sports'].includes(cat.toLowerCase()))) return {name: 'खेलकुद', color: 'cyan'}; /* Cyan for sports category */
-             if (cats.some(cat => ['अर्थ', 'business', 'व्यापार'].includes(cat.toLowerCase()))) return {name: 'व्यापार', color: 'green'};
-             return {name: cats[0], color: 'blue'}; /* Default blue for other categories */
-        }
-        
-        function sanitizeContent(htmlString) {
-            if (!htmlString) return '';
-            const doc = new DOMParser().parseFromString(htmlString, 'text/html');
-            doc.querySelectorAll('a').forEach(link => {
-                const span = document.createElement('span');
-                span.innerHTML = link.innerHTML;
-                link.parentNode.replaceChild(span, link);
-            });
-            return doc.body.innerHTML;
-        }
-
-        function openArticleModal(article) {
-            const modal = document.getElementById('article-modal');
-            const modalContent = document.getElementById('modal-content');
-            
-            const pubDate = new Date(article.pubDate).toLocaleDateString('ne-NP', {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-            });
-
-            const cleanedContent = sanitizeContent(article.content);
-
-            modalContent.innerHTML = `
-                <h1 class="text-3xl lg:text-4xl font-extrabold mb-2">${article.title}</h1>
-                <div class="flex items-center text-secondary text-sm mb-4">
-                    <span class="font-bold mr-2">रुपन्देही सन्देश संवाददाता</span> | 
-                    <span class="ml-2">प्रकाशित: ${pubDate}</span>
-                </div>
-                <img src="${article.thumbnail}" alt="${article.title}" class="w-full h-auto object-cover rounded-lg mb-6" onerror="this.src='${placeholderImg800x450}';">
-                <div class="text-lg">${cleanedContent}</div>
-            `;
-            
-            document.getElementById('modal-content-container').scrollTop = 0;
-            modal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-        }
-
-        function populateTopStories(articles) {
-            const mainFeature = document.getElementById('main-feature-container');
-            const sideStories = document.getElementById('side-stories-container');
-            mainFeature.innerHTML = '';
-            sideStories.innerHTML = '';
-
-            const [topStory, ...otherStories] = articles;
-            if (topStory) {
-                const category = getCategory(topStory);
-                mainFeature.innerHTML = `
-                    <div data-guid="${topStory.guid}" class="relative group cursor-pointer block overflow-hidden rounded-lg card-shadow">
-                        <img src="${topStory.thumbnail || placeholderImg800x450}" alt="${topStory.title}" class="w-full h-auto object-cover aspect-video transform group-hover:scale-110 transition-transform duration-500 ease-in-out" onerror="this.src='${placeholderImg800x450}';">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 p-4 md:p-6 text-white">
-                            ${category ? `<span class="bg-${category.color}-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">${category.name}</span>` : ''}
-                            <h1 class="text-3xl lg:text-4xl font-extrabold mt-2 group-hover:underline text-hover-primary-accent">${topStory.title}</h1>
-                            <p class="mt-2 text-gray-200 hidden sm:block">${stripHtml(topStory.description).substring(0, 120)}...</p>
-                        </div>
-                    </div>`;
-            }
-            otherStories.forEach(article => {
-                sideStories.innerHTML += `
-                    <div data-guid="${article.guid}" class="group cursor-pointer block transform hover:-translate-y-1 transition-transform duration-300">
-                        <div class="overflow-hidden rounded-lg">
-                            <img src="${article.thumbnail || placeholderImg400x225}" alt="${article.title}" class="w-full h-auto object-cover aspect-video transform group-hover:scale-110 transition-transform duration-500 ease-in-out" onerror="this.src='${placeholderImg400x225}';">
-                        </div>
-                        <h2 class="mt-2 text-xl font-bold group-hover:text-primary-accent text-primary">${article.title}</h2>
-                    </div>`;
-            });
-        }
-        
-        function populateNewsSection(articles){
-            const container = document.getElementById('news-section-grid');
-            container.innerHTML = articles.map(article => {
-                const category = getCategory(article);
-                return `
-                <div data-guid="${article.guid}" class="group cursor-pointer block transform hover:-translate-y-1 transition-transform duration-300">
-                    <div class="relative overflow-hidden rounded-lg">
-                        <img src="${article.thumbnail || placeholderImg400x225}" alt="${article.title}" class="w-full h-auto object-cover aspect-video transform group-hover:scale-110 transition-transform duration-500 ease-in-out" onerror="this.src='${placeholderImg400x225}';">
-                        ${category ? `<span class="absolute top-2 left-2 bg-${category.color}-600 text-white text-xs font-bold px-2 py-1 rounded-full">${category.name}</span>` : ''}
-                    </div>
-                    <h3 class="mt-2 text-lg font-bold group-hover:text-primary-accent text-primary">${article.title}</h3>
-                </div>`}).join('');
-        }
-        
-        function populateGenericSection(containerId, articles, color) {
-            const container = document.getElementById(containerId);
-            if(!articles || articles.length === 0) {
-                container.innerHTML = `<p class="text-secondary col-span-full">यस श्रेणीमा कुनै समाचार उपलब्ध छैन।</p>`;
-                return;
-            }
-            container.innerHTML = articles.map(article => `
-                <div data-guid="${article.guid}" class="group cursor-pointer block">
-                    <div class="overflow-hidden rounded-lg">
-                       <img src="${article.thumbnail || placeholderImg400x225}" alt="${article.title}" class="w-full h-auto object-cover aspect-video transform group-hover:scale-110 transition-transform duration-500 ease-in-out" onerror="this.src='${placeholderImg400x225}';">
-                    </div>
-                    <h3 class="mt-2 text-md font-bold group-hover:text-${color}-600 text-primary">${article.title}</h3>
-                </div>`).join('');
-        }
-
-        function populateSportsSection(articles) {
-            populateGenericSection('sports-section-grid', articles, 'cyan');
-        }
-        function populateBusinessSection(articles) {
-            populateGenericSection('business-section-grid', articles, 'green');
-        }
-
-        function stripHtml(html) {
-           if(!html) return '';
-           let doc = new DOMParser().parseFromString(html, 'text/html');
-           return doc.body.textContent || "";
         }
     </script>
 </body>
