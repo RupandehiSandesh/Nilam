@@ -14,6 +14,10 @@
         .form-input {
             transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
         }
+        #submit-button:disabled {
+            cursor: not-allowed;
+            background-color: #9ca3af;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -99,7 +103,6 @@
         import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // --- Password Protection ---
         document.addEventListener('DOMContentLoaded', () => {
             const mainContent = document.getElementById('main-content');
             const passwordOverlay = document.getElementById('password-overlay');
@@ -112,7 +115,7 @@
                 if (passwordInput.value === 'nilam') {
                     passwordOverlay.style.display = 'none';
                     mainContent.style.display = 'block';
-                    initializeFirebase(); // Initialize Firebase only after successful login
+                    initializeFirebase();
                 } else {
                     passwordError.textContent = 'Incorrect password. Please try again.';
                     passwordInput.value = '';
@@ -121,7 +124,6 @@
             });
         });
 
-        // --- Firebase Initialization ---
         function initializeFirebase() {
             const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID" };
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -131,11 +133,20 @@
             const auth = getAuth(app);
             
             const articlesCollection = collection(db, `/artifacts/${appId}/public/data/articles`);
+            const form = document.getElementById('add-news-form');
+            const messageDiv = document.getElementById('form-message');
+            const submitButton = document.getElementById('submit-button');
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Connecting...';
 
             onAuthStateChanged(auth, user => {
                  if (user) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Publish Article';
                     displayPublishedNews(articlesCollection, db, appId);
                 } else {
+                    submitButton.textContent = 'Authenticating...';
                     const authenticate = async () => {
                         try {
                             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -145,19 +156,24 @@
                             }
                         } catch (error) {
                             console.error("Authentication failed:", error);
+                            submitButton.textContent = 'Authentication Failed';
+                            messageDiv.textContent = 'Error: Could not connect to the server.';
+                            messageDiv.className = 'text-red-600';
                         }
                     };
                     authenticate();
                 }
             });
 
-            const form = document.getElementById('add-news-form');
-            const messageDiv = document.getElementById('form-message');
-            const submitButton = document.getElementById('submit-button');
-
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
+                if (!auth.currentUser) {
+                    messageDiv.textContent = 'Error: Not authenticated. Please refresh.';
+                    messageDiv.className = 'text-red-600';
+                    return;
+                }
+
                 submitButton.disabled = true;
                 submitButton.textContent = 'Publishing...';
                 messageDiv.textContent = '';
@@ -178,7 +194,7 @@
                     form.reset();
                 } catch (error) {
                     console.error("Error adding document: ", error);
-                    messageDiv.textContent = 'Error: Could not publish article.';
+                    messageDiv.textContent = `Error: Could not publish article. (${error.message})`;
                     messageDiv.className = 'text-red-600';
                 } finally {
                     submitButton.disabled = false;
@@ -187,7 +203,6 @@
                 }
             });
         }
-
 
         function displayPublishedNews(articlesCollection, db, appId) {
             const container = document.getElementById('published-news');
@@ -200,7 +215,7 @@
                 }
                 
                 loadingP.style.display = 'none';
-                container.innerHTML = ''; // Clear previous list
+                container.innerHTML = '';
                 const articles = [];
                 snapshot.forEach(doc => articles.push({ id: doc.id, ...doc.data() }));
                 
