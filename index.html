@@ -1,121 +1,131 @@
 <!DOCTYPE html>
-<html lang="ne">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>रुपन्देही सन्देश - समाचार</title>
-    <script src="https://cdn.tailwindcss.com/"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
-    <style>
-        .logo-font { font-family: 'Poppins', sans-serif; }
-        :root { --bg-primary: #ffffff; --bg-secondary: #f0f2f5; --text-primary: #1a202c; --text-secondary: #4a5568; --border-color: #e2e8f0; --header-bg: #1d4ed8; --primary-accent-color: #1d4ed8; --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
-        .dark-mode { --bg-primary: #1a202c; --bg-secondary: #2d3748; --text-primary: #f7fafc; --text-secondary: #a0aec0; --border-color: #4a5568; --header-bg: #1e3a8a; --primary-accent-color: #3b82f6; --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2); }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-secondary); color: var(--text-primary); transition: background-color 0.3s, color 0.3s; }
-        body.overflow-hidden { overflow: hidden; }
-        .main-content-bg { background-color: var(--bg-primary); }
-        .text-primary { color: var(--text-primary); }
-        .text-secondary { color: var(--text-secondary); }
-        .header-bg { background-color: var(--header-bg); }
-        .section-border { border-color: var(--border-color); }
-        .card-shadow { box-shadow: var(--card-shadow); }
-        .logo-text-color { background: linear-gradient(to bottom, #ffffff 60%, #e0e0e0 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-        .border-primary-accent { border-color: var(--primary-accent-color); }
-        .bg-primary-accent { background-color: var(--primary-accent-color); }
-        .text-hover-primary-accent:hover { color: var(--primary-accent-color); }
-        .ticker-bg { background-color: var(--primary-accent-color); }
-        a, button { transition: color 0.2s, background-color 0.2s; }
-        .aspect-video { aspect-ratio: 16 / 9; }
-        .ticker-wrap { width: 100%; overflow: hidden; background-color: #262626; padding: 10px 0; color: white; }
-        .ticker-move { display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite; }
-        .ticker-item { margin-right: 50px; font-size: 0.9rem; }
-        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        #theme-toggle { cursor: pointer; }
-        #modal-content img { max-width: 100%; height: auto; border-radius: 0.5rem; margin-top: 1rem; margin-bottom: 1rem; }
-        #modal-content p { line-height: 1.75; margin-bottom: 1rem; }
-    </style>
+    <title>Rupandehi Sandesh - Latest News</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <header class="header-bg text-white sticky top-0 z-50 shadow-lg">
-        <div class="bg-black bg-opacity-20"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center text-xs py-1"><div id="live-clock" class="font-semibold"></div><div class="flex items-center gap-4"><div id="weather-widget" class="flex items-center"><span class="mr-2">सिद्धार्थनगर:</span><i class="fas fa-spinner fa-spin"></i></div><div id="theme-toggle" class="text-lg"> <i class="fas fa-sun"></i> </div></div></div></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><div class="flex items-center justify-between h-16"><div class="flex-shrink-0"><a href="#" class="text-3xl font-black tracking-wider flex items-center logo-font logo-text-color"><i class="fas fa-broadcast-tower text-xl mr-2 text-white"></i>रुपन्देही सन्देश</a></div><nav class="hidden md:flex md:items-center md:space-x-6"><a href="#" class="px-3 py-2 rounded-md text-sm font-medium border-b-2 border-white">गृह पृष्ठ</a><a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:border-b-2 hover:border-white transition-all">समाचार</a><a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:border-b-2 hover:border-white transition-all">खेलकुद</a><a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:border-b-2 hover:border-white transition-all">व्यापार</a><a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:border-b-2 hover:border-white transition-all">संस्कृति</a></nav><div class="hidden md:flex items-center"><div class="relative"><input type="text" placeholder="खोज्नुहोस्..." class="bg-gray-800 bg-opacity-30 text-white placeholder-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-white"><svg class="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div></div><div class="md:hidden"><button id="mobile-menu-button" class="text-white hover:text-gray-300 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg></button></div></div></div>
-        <div id="mobile-menu" class="md:hidden hidden bg-blue-800"><nav class="px-2 pt-2 pb-3 space-y-1 sm:px-3"><a href="#" class="block px-3 py-2 rounded-md text-base font-medium bg-blue-900">गृह पृष्ठ</a><a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">समाचार</a></nav></div>
-    </header>
-    <div class="ticker-wrap"><div class="flex items-center h-full"><div class="bg-primary-accent font-bold px-4 py-2 text-sm uppercase flex-shrink-0">ताजा खबर</div><div class="ticker-move w-full" id="news-ticker"></div></div></div>
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="main-content-bg p-6 rounded-lg card-shadow">
-            <div id="current-date" class="text-secondary mb-4 font-medium"></div>
-            <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 pb-8 section-border"><div id="main-feature-container"></div><div id="side-stories-container" class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8"></div></section>
-            <section class="mb-8 pb-8 section-border"><h2 class="text-2xl font-bold pb-2 mb-4 border-b-4 border-primary-accent text-primary">समाचार</h2><div id="news-section-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div></section>
-            <section class="mb-8 pb-8 section-border"><h2 class="text-2xl font-bold pb-2 mb-4 border-b-4 border-cyan-500 text-primary">खेलकुद</h2><div id="sports-section-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6"></div></section>
-            <section class="mb-8"><h2 class="text-2xl font-bold pb-2 mb-4 border-b-4 border-green-500 text-primary">व्यापार</h2><div id="business-section-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6"></div></section>
+    <header>
+        <div class="header-top">
+            <div class="container">
+                <div class="date-weather">
+                    <span id="current-date"></span>
+                    <span id="current-time"></span>
+                    <span id="temperature">Loading...</span>
+                </div>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="theme-btn">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="admin.html" class="admin-link">Admin</a>
+                </div>
+            </div>
         </div>
+        
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">
+                    <h1>Rupandehi Sandesh</h1>
+                    <p>Your Trusted News Source</p>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#politics">Politics</a></li>
+                    <li><a href="#business">Business</a></li>
+                    <li><a href="#sports">Sports</a></li>
+                    <li><a href="#entertainment">Entertainment</a></li>
+                    <li><a href="#technology">Technology</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section class="breaking-news">
+        <div class="container">
+            <div class="breaking-label">
+                <span>BREAKING</span>
+            </div>
+            <div class="breaking-content">
+                <marquee behavior="scroll" direction="left" id="breaking-news-text">
+                    Welcome to Rupandehi Sandesh - Your trusted news portal
+                </marquee>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+        <section class="featured-news" id="home">
+            <h2>Featured News</h2>
+            <div class="featured-grid" id="featured-news">
+                <!-- News loaded by JavaScript -->
+            </div>
+        </section>
+
+        <section class="news-categories">
+            <div class="category-section" id="politics">
+                <h2>Politics</h2>
+                <div class="news-grid" id="politics-news"></div>
+            </div>
+
+            <div class="category-section" id="business">
+                <h2>Business</h2>
+                <div class="news-grid" id="business-news"></div>
+            </div>
+
+            <div class="category-section" id="sports">
+                <h2>Sports</h2>
+                <div class="news-grid" id="sports-news"></div>
+            </div>
+
+            <div class="category-section" id="entertainment">
+                <h2>Entertainment</h2>
+                <div class="news-grid" id="entertainment-news"></div>
+            </div>
+
+            <div class="category-section" id="technology">
+                <h2>Technology</h2>
+                <div class="news-grid" id="technology-news"></div>
+            </div>
+        </section>
     </main>
-    <div id="article-modal" class="hidden fixed inset-0 z-[60] overflow-y-auto"><div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-75"></div><div class="relative main-content-bg w-full max-w-4xl mx-auto my-8 p-6 md:p-8 rounded-lg shadow-xl"><button id="close-modal-button" class="absolute top-4 right-4 text-secondary hover:text-primary text-4xl font-light z-10">&times;</button><div id="modal-content-container" class="max-h-[80vh] overflow-y-auto pr-4"><div id="modal-content" class="text-primary"></div></div></div></div>
-    <footer class="bg-gray-800 text-gray-300"><div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8"><div class="flex flex-col items-center"><div class="text-2xl font-black tracking-wider mb-4 logo-font logo-text-color"><i class="fas fa-broadcast-tower text-xl mr-2 text-white"></i> रुपन्देही सन्देश</div><div class="flex justify-center space-x-6 mb-8"><a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-facebook-f fa-lg"></i></a><a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-twitter fa-lg"></i></a><a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-instagram fa-lg"></i></a><a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-youtube fa-lg"></i></a></div></div><div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm"><p>&copy; २०२५ रुपन्देही सन्देश। सबै अधिकार सुरक्षित।</p></div></div></footer>
-<script>
-    const articles = [{"id":"article-1759868055637","title":"test","imageUrl":"https://ibb.co/DfyLpcNG","category":"News","content":"website developed by Pratik","createdAt":"2025-10-07T20:14:15.637Z"}];
-    let articlesById = {};
-    const placeholderImgBaseColor = '1d4ed8'; const placeholderImgTextColor = 'ffffff'; 
-    const placeholderImg800x450 = `https://placehold.co/800x450/${placeholderImgBaseColor}/${placeholderImgTextColor}?text=रुपन्देही+सन्देश`;
-    const placeholderImg400x225 = `https://placehold.co/400x225/${placeholderImgBaseColor}/${placeholderImgTextColor}?text=रुपन्देही+सन्देश`;
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        articles.forEach(article => { articlesById[article.id] = article; });
-        populateContent(articles);
-        setupUI();
-    });
-    
-    function populateContent(articles) {
-        if (articles.length === 0) {
-            document.getElementById('main-feature-container').innerHTML = '<p class="text-secondary col-span-full text-center py-10">अहिले कुनै समाचार उपलब्ध छैन।</p>';
-            return;
-        }
-        populateTicker(articles.slice(0, 10));
-        populateTopStories(articles.slice(0, 5));
-        populateNewsSection(articles.filter(a => a.category === 'News').slice(0, 3));
-        populateSportsSection(articles.filter(a => a.category === 'Sports').slice(0, 4));
-        populateBusinessSection(articles.filter(a => a.category === 'Business').slice(0, 4));
-        document.querySelectorAll('[data-id]').forEach(card => card.addEventListener('click', () => { const id = card.dataset.id; if (id && articlesById[id]) { openArticleModal(articlesById[id]); }}));
-    }
-    function populateTicker(articles){ const ticker = document.getElementById('news-ticker'); if(ticker) ticker.innerHTML = articles.map(article => `<span class="ticker-item">${article.title} <i class="fas fa-circle text-white text-xs mx-2"></i></span>`).join(''); }
-    function openArticleModal(article) {
-        const modal = document.getElementById('article-modal'); const modalContent = document.getElementById('modal-content');
-        const pubDate = new Date(article.createdAt).toLocaleDateString('ne-NP', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        modalContent.innerHTML = `<h1 class="text-3xl lg:text-4xl font-extrabold mb-2">${article.title}</h1><div class="flex items-center text-secondary text-sm mb-4"><span class="font-bold mr-2">रुपन्देही सन्देश संवाददाता</span> | <span class="ml-2">प्रकाशित: ${pubDate}</span></div><img src="${article.imageUrl || placeholderImg800x450}" alt="${article.title}" class="w-full h-auto object-cover rounded-lg mb-6" onerror="this.src='${placeholderImg800x450}';"><div class="text-lg">${article.content.replace(/\n/g, '<br>')}</div>`;
-        document.getElementById('modal-content-container').scrollTop = 0; modal.classList.remove('hidden'); document.body.classList.add('overflow-hidden');
-    }
-    function populateTopStories(articles) {
-        const mainFeature = document.getElementById('main-feature-container'); const sideStories = document.getElementById('side-stories-container'); mainFeature.innerHTML = ''; sideStories.innerHTML = '';
-        const [topStory, ...otherStories] = articles;
-        if (topStory) { mainFeature.innerHTML = `<div data-id="${topStory.id}" class="relative group cursor-pointer block overflow-hidden rounded-lg card-shadow"><img src="${topStory.imageUrl || placeholderImg800x450}" alt="${topStory.title}" class="w-full h-auto object-cover aspect-video transform group-hover:scale-110 transition-transform duration-500 ease-in-out" onerror="this.src='${placeholderImg800x450}';"><div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div><div class="absolute bottom-0 left-0 p-4 md:p-6 text-white"><span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">${topStory.category}</span><h1 class="text-3xl lg:text-4xl font-extrabold mt-2 group-hover:underline text-hover-primary-accent">${topStory.title}</h1></div></div>`; }
-        otherStories.forEach(article => { sideStories.innerHTML += `<div data-id="${article.id}" class="group cursor-pointer block transform hover:-translate-y-1 transition-transform duration-300"><div class="overflow-hidden rounded-lg"><img src="${article.imageUrl || placeholderImg400x225}" alt="${article.title}" class="w-full h-auto object-cover aspect-video transform group-hover:scale-110 transition-transform duration-500 ease-in-out" onerror="this.src='${placeholderImg400x225}';"></div><h2 class="mt-2 text-xl font-bold group-hover:text-primary-accent text-primary">${article.title}</h2></div>`; });
-    }
-    function populateGenericSection(containerId, articles, color) {
-        const container = document.getElementById(containerId); if(!articles || articles.length === 0) { container.innerHTML = `<p class="text-secondary col-span-full">यस श्रेणीमा कुनै समाचार उपलब्ध छैन।</p>`; return; }
-        container.innerHTML = articles.map(article => `<div data-id="${article.id}" class="group cursor-pointer block transform hover:-translate-y-1 transition-transform duration-300"><div class="relative overflow-hidden rounded-lg"><img src="${article.imageUrl || placeholderImg400x225}" alt="${article.title}" class="w-full h-auto object-cover aspect-video transform group-hover:scale-110 transition-transform duration-500 ease-in-out" onerror="this.src='${placeholderImg400x225}';"><span class="absolute top-2 left-2 bg-${color}-600 text-white text-xs font-bold px-2 py-1 rounded-full">${article.category}</span></div><h3 class="mt-2 text-lg font-bold group-hover:text-primary-accent text-primary">${article.title}</h3></div>`).join('');
-    }
-    function populateNewsSection(articles){ populateGenericSection('news-section-grid', articles, 'blue'); }
-    function populateSportsSection(articles) { populateGenericSection('sports-section-grid', articles, 'cyan'); }
-    function populateBusinessSection(articles) { populateGenericSection('business-section-grid', articles, 'green'); }
-    function setupUI() {
-        document.getElementById('mobile-menu-button').addEventListener('click', () => { document.getElementById('mobile-menu').classList.toggle('hidden'); });
-        const themeToggle = document.getElementById('theme-toggle'); const body = document.body; const themeIcon = themeToggle.querySelector('i');
-        const currentTheme = localStorage.getItem('theme');
-        if (currentTheme === 'dark') { body.classList.add('dark-mode'); themeIcon.classList.replace('fa-sun', 'fa-moon'); }
-        themeToggle.addEventListener('click', () => { body.classList.toggle('dark-mode'); const isDarkMode = body.classList.contains('dark-mode'); localStorage.setItem('theme', isDarkMode ? 'dark' : 'light'); themeIcon.classList.toggle('fa-sun', !isDarkMode); themeIcon.classList.toggle('fa-moon', isDarkMode); });
-        const modal = document.getElementById('article-modal'); const closeModalButton = document.getElementById('close-modal-button'); const modalOverlay = document.getElementById('modal-overlay');
-        function closeModal() { modal.classList.add('hidden'); body.classList.remove('overflow-hidden'); }
-        closeModalButton.addEventListener('click', closeModal); modalOverlay.addEventListener('click', closeModal);
-        updateDate(); updateClock(); setInterval(updateClock, 1000); fetchWeather();
-    }
-    function updateDate() { const dateElement = document.getElementById('current-date'); if(dateElement) dateElement.textContent = new Date().toLocaleDateString('ne-NP', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }
-    function updateClock() { const clockElement = document.getElementById('live-clock'); if(clockElement) clockElement.textContent = new Date().toLocaleTimeString('ne-NP'); }
-    async function fetchWeather() {
-        const weatherWidget = document.getElementById('weather-widget');
-        try { const mockData = { current: { temp_c: 28, condition: { text: "आंशिक बादल लागेको", icon: "//cdn.weatherapi.com/weather/64x64/day/116.png" }}}; const { current } = mockData; weatherWidget.innerHTML = `<img src="https:${current.condition.icon}" alt="${current.condition.text}" class="w-6 h-6 mr-1"><span class="font-semibold">${current.temp_c}°C,</span><span class="ml-1">${current.condition.text}</span>`;
-        } catch (error) { console.error("Weather fetch error:", error); weatherWidget.innerHTML = 'मौसम डाटा अनुपलब्ध छ'; }
-    }
-</script>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Rupandehi Sandesh</h3>
+                    <p>Delivering accurate and timely news from Rupandehi and beyond.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="#politics">Politics</a></li>
+                        <li><a href="#business">Business</a></li>
+                        <li><a href="#sports">Sports</a></li>
+                        <li><a href="#entertainment">Entertainment</a></li>
+                        <li><a href="#technology">Technology</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: info@rupandehisandesh.com</p>
+                    <p>Phone: +977-XXXXXXX</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Rupandehi Sandesh. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
