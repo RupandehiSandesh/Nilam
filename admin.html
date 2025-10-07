@@ -125,8 +125,23 @@
         });
 
         function initializeFirebase() {
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID" };
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const messageDiv = document.getElementById('form-message');
+            const submitButton = document.getElementById('submit-button');
+            const loadingArticles = document.getElementById('loading-articles');
+
+            if (typeof __firebase_config === 'undefined' || typeof __app_id === 'undefined') {
+                console.error("Firebase configuration is missing from the environment.");
+                messageDiv.textContent = 'Error: Server configuration is missing. Cannot connect.';
+                messageDiv.className = 'text-red-600';
+                submitButton.textContent = 'Connection Failed';
+                submitButton.disabled = true;
+                loadingArticles.textContent = 'Could not connect to the database.';
+                loadingArticles.className = 'text-red-600';
+                return;
+            }
+
+            const firebaseConfig = JSON.parse(__firebase_config);
+            const appId = __app_id;
 
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
@@ -134,8 +149,6 @@
             
             const articlesCollection = collection(db, `/artifacts/${appId}/public/data/articles`);
             const form = document.getElementById('add-news-form');
-            const messageDiv = document.getElementById('form-message');
-            const submitButton = document.getElementById('submit-button');
 
             submitButton.disabled = true;
             submitButton.textContent = 'Connecting...';
@@ -168,7 +181,6 @@
                 }
             };
             authenticate();
-
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
