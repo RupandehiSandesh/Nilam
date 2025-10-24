@@ -8,14 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
     
-    <!-- Schema.org JSON-LD for Search Engine Optimization -->
+    <!-- Schema.org JSON-LD for Search Engine Optimization (ENHANCED WITH DESCRIPTION) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Organization",
+      "@type": "NewsMediaOrganization",
       "name": "रुपन्देही सन्देश",
       "url": "https://rupandehisandesh.com",
       "logo": "https://placehold.co/100x100/1d4ed8/ffffff?text=RS",
+      "description": "रुपन्देही र लुम्बिनी प्रदेशको आधिकारिक, निष्पक्ष र भरपर्दो समाचार स्रोत। हाम्रो उद्देश्य सत्य र तथ्यमा आधारित पत्रकारिता गर्नु हो।",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "बुटवल-९, रूपन्देही",
+        "addressLocality": "बुटवल",
+        "addressRegion": "लुम्बिनी प्रदेश",
+        "postalCode": "32900",
+        "addressCountry": "नेपाल"
+      },
+      "telephone": "+977-12345678",
       "contactPoint": {
         "@type": "ContactPoint",
         "email": "support@rupandehisandesh.com",
@@ -108,10 +118,23 @@
             <section class="mb-8 pb-8 section-border"><h2 class="text-2xl font-bold pb-2 mb-4 border-b-4 border-primary-accent text-primary">समाचार</h2><div id="news-section-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8"><div class="space-y-3"><div class="skeleton h-40"></div><div class="skeleton h-6"></div></div><div class="space-y-3"><div class="skeleton h-40"></div><div class="skeleton h-6"></div></div><div class="space-y-3"><div class="skeleton h-40"></div><div class="skeleton h-6"></div></div></div></section>
             <section class="mb-8 pb-8 section-border"><h2 class="text-2xl font-bold pb-2 mb-4 border-b-4 border-cyan-500 text-primary">खेलकुद</h2><div id="sports-section-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6"></div></section>
             <section class="mb-8"><h2 class="text-2xl font-bold pb-2 mb-4 border-b-4 border-green-500 text-primary">व्यापार</h2><div id="business-section-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6"></div></section>
+            
+            <!-- NEW ABOUT US SECTION ADDED FOR CREDIBILITY -->
+            <section class="mb-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+                <h2 class="text-2xl font-bold pb-2 mb-4 border-b-4 border-gray-500 text-primary">हाम्रो बारेमा (About Us)</h2>
+                <div class="text-secondary leading-relaxed space-y-4">
+                    <p>
+                        रुपन्देही सन्देश लुम्बिनी प्रदेशमा आधारित एक प्रमुख डिजिटल समाचार प्रकाशन हो। हामी निष्पक्ष, सन्तुलित र तथ्यमा आधारित पत्रकारिताको सिद्धान्तमा अडिग छौं। हाम्रो मुख्य उद्देश्य बुटवल, भैरहवा लगायत रूपन्देही र समग्र लुम्बिनी क्षेत्रका महत्त्वपूर्ण समाचार, विचार र विश्लेषणहरू जनतासामु पुर्याउनु हो।
+                    </p>
+                    <p>
+                        हाम्रो सम्पादकीय टोलीले स्थानीयदेखि राष्ट्रिय स्तरका घटनाक्रमहरूलाई गहिरो अनुसन्धानका साथ प्रस्तुत गर्दछ। हामीले **दर्ता भएको आधिकारिक संस्था**को रूपमा पारदर्शिता र व्यावसायिकता कायम राखेका छौं। कुनै पनि जिज्ञासा वा सहयोगका लागि कृपया <a href="mailto:support@rupandehisandesh.com" class="text-primary-accent hover:underline font-semibold">support@rupandehisandesh.com</a> मा सम्पर्क गर्न सक्नुहुनेछ।
+                    </p>
+                </div>
+            </section>
         </div>
     </main>
     <div id="article-modal" class="hidden fixed inset-0 z-[60] overflow-y-auto"><div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-75"></div><div class="relative main-content-bg w-full max-w-4xl mx-auto my-8 p-6 md:p-8 rounded-lg shadow-xl"><button id="close-modal-button" class="absolute top-4 right-4 text-secondary hover:text-primary text-4xl font-light z-10">&times;</button><div id="modal-content-container" class="max-h-[80vh] overflow-y-auto pr-4"><div id="modal-content" class="text-primary"></div></div></div></div>
-    <!-- Updated Footer -->
+    <!-- Updated Footer with Full Contact Info -->
     <footer class="bg-gray-800 text-gray-300">
         <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col items-center">
@@ -122,11 +145,20 @@
                     <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-instagram fa-lg"></i></a>
                     <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-youtube fa-lg"></i></a>
                 </div>
-                <!-- Contact Email Address (Visible to users) -->
-                <div class="text-center mt-6 mb-4">
-                    <p class="text-lg font-semibold text-white mb-2">हामीलाई सम्पर्क गर्नुहोस्</p>
-                    <a href="mailto:support@rupandehisandesh.com" class="text-blue-300 hover:text-white transition-colors">
-                        <i class="fas fa-envelope mr-2"></i>support@rupandehisandesh.com
+                <!-- Contact Information (Visible to users and crawlers, matching Schema.org data) -->
+                <div class="text-center mt-6 mb-4 space-y-2">
+                    <p class="text-lg font-semibold text-white">हाम्रो सम्पर्क</p>
+                    <div class="flex items-center justify-center text-gray-300 text-sm">
+                        <i class="fas fa-map-marker-alt mr-2 text-primary-accent"></i>
+                        <span>बुटवल-९, रूपन्देही, नेपाल</span>
+                    </div>
+                    <a href="tel:+97712345678" class="flex items-center justify-center text-blue-300 hover:text-white transition-colors">
+                        <i class="fas fa-phone mr-2 text-primary-accent"></i>
+                        <span>+९७७-१२३४५६७८</span>
+                    </a>
+                    <a href="mailto:support@rupandehisandesh.com" class="flex items-center justify-center text-blue-300 hover:text-white transition-colors">
+                        <i class="fas fa-envelope mr-2 text-primary-accent"></i>
+                        <span>support@rupandehisandesh.com</span>
                     </a>
                 </div>
             </div>
